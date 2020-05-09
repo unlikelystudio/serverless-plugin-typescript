@@ -1,8 +1,5 @@
 import TypeScriptPlugin from '../src';
-import {
-  ServerlessTSInstance,
-  ServerlessTSFunctionMap,
-} from '../src/serverlessTypes';
+import { ServerlessTSInstance, ServerlessTSFunctionMap } from '../src/types';
 
 const createInstance = (
   functions: ServerlessTSFunctionMap,
