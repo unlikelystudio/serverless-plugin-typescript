@@ -16,14 +16,16 @@
   },
   "license": "MIT",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
     "dist/**/*"
   ],
   "scripts": {
     "pretest": "npm run lint",
     "build": "rimraf dist && tsc -p tsconfig.build.json",
+    "build:check": "tsc",
     "format": "prettier --loglevel error --write \"{src,tests}/**/*.ts\"",
-    "test": "jest --coverage",
+    "test": "jest",
     "lint": "eslint --ext ts .",
     "prepublishOnly": "npm format && npm run lint && npm test",
     "preversion": "npm run format && npm run lint && npm test",
