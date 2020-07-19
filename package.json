@@ -27,7 +27,7 @@
     "format": "prettier --loglevel error --write \"{src,tests}/**/*.ts\"",
     "test": "jest",
     "lint": "eslint --ext ts .",
-    "prepublishOnly": "npm format && npm run lint && npm test",
+    "prepublishOnly": "npm run format && npm run lint && npm test",
     "preversion": "npm run format && npm run lint && npm test",
     "version": " git add -A src",
     "postversion": "git push && git push --tags"
