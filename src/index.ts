@@ -203,12 +203,14 @@ class TypeScriptPlugin {
   async copyExtras(): Promise<void> {
     const { service } = this.serverless;
     // include any "extras" from the "include" section
-    Object.values(service.functions).forEach((fn) => this.copyIncludes(fn.package.include));
-    this.copyIncludes(service.package.include)
+    for (const fn of Object.values(service.functions)) {
+      await this.copyIncludes(fn.package.include);
+    }
+    this.copyIncludes(service.package.include);
   }
 
-  private async copyIncludes(include: string[]) {
-    if (!include) return
+  private async copyIncludes(include: string[]): Promise<void> {
+    if (!include) return;
 
     const files = await globby(include);
     for (const filename of files) {
@@ -226,9 +228,7 @@ class TypeScriptPlugin {
         );
       }
     }
-
   }
-
 
   /**
    * Copy the `node_modules` folder and `package.json` files to the output directory.
