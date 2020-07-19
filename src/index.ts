@@ -26,7 +26,7 @@ class TypeScriptPlugin {
 
 	serverless: ServerlessTSInstance;
 	options: ServerlessTSOptions;
-	hooks: { [key: string]: Function };
+	hooks: { [key: string]: () => void | Promise<void> };
 
 	constructor(serverless: ServerlessTSInstance, options: ServerlessTSOptions) {
 		this.serverless = serverless;
@@ -346,7 +346,7 @@ class TypeScriptPlugin {
 	private watchFiles(
 		rootFileNames: string[],
 		originalServicePath: string,
-		cb: Function,
+		cb: () => void,
 	): void {
 		const tsConfig = getTypescriptConfig(
 			originalServicePath,
