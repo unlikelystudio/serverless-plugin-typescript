@@ -1,7 +1,4 @@
-import {
-	getTypescriptConfig,
-	makeDefaultTypescriptConfig,
-} from '../src/typescript';
+import { getTypescriptConfig, makeDefaultTypescriptConfig } from '../src/utils';
 
 describe('getTypescriptConfig', () => {
 	it('returns default typescript configuration if the one provided does not exist', () => {

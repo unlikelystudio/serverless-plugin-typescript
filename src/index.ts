@@ -13,7 +13,7 @@ import {
 	getTypescriptConfig,
 	run,
 	getSourceFiles,
-} from './typescript';
+} from './utils';
 import { unwatchFile, watchFile, Stats } from 'fs-extra';
 
 const SERVERLESS_FOLDER = '.serverless';

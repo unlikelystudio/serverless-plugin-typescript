@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import { extractFileNames } from '../src/typescript';
+import { extractFileNames } from '../src/utils';
 import { ServerlessTSFunction } from '../src/types';
 
 const functions: { [key: string]: ServerlessTSFunction } = {
