@@ -168,15 +168,11 @@ class TypeScriptPlugin {
 		this.prepare();
 		this.serverless.cli.log('Compiling with Typescript...');
 
-		if (!this.originalServicePath) {
-			// Save original service path and functions
-			this.originalServicePath = this.serverless.config.servicePath;
-			// Fake service path so that serverless will know what to zip
-			this.serverless.config.servicePath = path.join(
-				this.originalServicePath,
-				BUILD_FOLDER,
-			);
-		}
+		// Fake service path so that serverless will know what to zip
+		this.serverless.config.servicePath = path.join(
+			this.originalServicePath,
+			BUILD_FOLDER,
+		);
 
 		const tsconfig = getTypescriptConfig(
 			this.originalServicePath,
@@ -200,12 +196,16 @@ class TypeScriptPlugin {
 	 * Link or copy extras such as node_modules or package.include definitions.
 	 */
 	async copyExtras(): Promise<void> {
+		this.serverless.cli.log('Copying Extras...');
 		const { service } = this.serverless;
 		// include any "extras" from the "include" section
-		for (const fn of Object.values(service.functions)) {
-			await this.copyIncludes(fn.package.include);
+		for await (const fn of Object.values(service.functions)) {
+			this.copyIncludes(fn.package.include);
 		}
-		this.copyIncludes(service.package.include);
+		if (this.serverless.package?.include) {
+			this.copyIncludes(this.serverless.package.include);
+		}
+		this.serverless.cli.log('Finished Copying Extras');
 	}
 
 	private async copyIncludes(include: string[]): Promise<void> {
@@ -235,6 +235,7 @@ class TypeScriptPlugin {
 	 * @param isPackaging Provided if serverless is packaging the service for deployment
 	 */
 	async copyDependencies(isPackaging = false): Promise<void> {
+		this.serverless.cli.log('Copying Dependencies ...');
 		const outPkgPath = path.resolve(path.join(BUILD_FOLDER, 'package.json'));
 		const outModulesPath = path.resolve(
 			path.join(BUILD_FOLDER, 'node_modules'),
@@ -267,6 +268,7 @@ class TypeScriptPlugin {
 		if (!fse.existsSync(outPkgPath)) {
 			await this.linkOrCopy(path.resolve('package.json'), outPkgPath, 'file');
 		}
+		this.serverless.cli.log('Finished Copying Dependencies ...');
 	}
 
 	/**
@@ -294,7 +296,7 @@ class TypeScriptPlugin {
 			return;
 		}
 
-		if (service.package.individually) {
+		if (this.serverless.package?.individually) {
 			const functionNames = Object.keys(this.functions);
 			functionNames.forEach((name) => {
 				const artifact = service.functions[name].package.artifact;
@@ -309,11 +311,11 @@ class TypeScriptPlugin {
 			return;
 		}
 
-		if (service.package.artifact) {
-			service.package.artifact = path.join(
+		if (this.serverless.package?.artifact) {
+			this.serverless.package.artifact = path.join(
 				this.originalServicePath,
 				SERVERLESS_FOLDER,
-				path.basename(service.package.artifact),
+				path.basename(this.serverless.package.artifact),
 			);
 		}
 	}
