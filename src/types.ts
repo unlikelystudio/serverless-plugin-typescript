@@ -1,3 +1,5 @@
+import { FunctionDefinition } from 'serverless';
+
 export type ServerlessTSFunctionMap = Record<string, ServerlessTSFunction>;
 
 export interface ServerlessTSInstance {
@@ -8,6 +10,7 @@ export interface ServerlessTSInstance {
 		servicePath: string;
 	};
 	service: ServerlessTSService;
+	package?: ServerlessTSPackage;
 	pluginManager: ServerlessTSPluginManager;
 }
 
@@ -18,31 +21,44 @@ export interface ServerlessTSService {
 	};
 	custom?: {
 		typeScript?: {
-			tsconfigFilePath?: string | undefined;
+			tsconfigFilePath?: string;
 		};
 	};
 	functions: ServerlessTSFunctionMap;
-	package: ServerlessTSPackage;
 	getAllFunctions(): string[];
+	getFunction(functionName: string): FunctionDefinition;
 }
 
+/** CLI Options */
 export interface ServerlessTSOptions {
+	/** The name of the function to run (should be required) */
 	function?: string;
+	/** Recompile and run a function locally on source changes */
 	watch?: boolean;
+	/** Path to JSON or YAML file holding input data */
 	extraServicePath?: string;
+	/** Input data */
 	tsconfigFilePath?: string;
 }
 
-export interface ServerlessTSFunction {
+export interface ServerlessTSFunction
+	extends Pick<FunctionDefinition, 'handler' | 'runtime'> {
 	handler: string;
 	package: ServerlessTSPackage;
 	runtime?: string;
 }
 
+/** Optional deployment packaging configuration */
 export interface ServerlessTSPackage {
+	/** Specify the directories and files which should be included in the deployment package */
 	include: string[];
+	/** Specify the directories and files which should be excluded in the deployment package */
 	exclude: string[];
+	/** Config if Serverless should automatically exclude dev dependencies in the deployment package. Defaults to true */
+	excludeDevDependencies?: boolean;
+	/** Own package that should be used. You must provide this file. */
 	artifact?: string;
+	/** Enables individual packaging for each function. If true you must provide package for each function. Defaults to false */
 	individually?: boolean;
 }
 

@@ -16,16 +16,17 @@ const createInstance = (
 			name: 'aws',
 			runtime: globalRuntime,
 		},
-		package: {
-			individually: true,
-			include: [],
-			exclude: [],
-		},
 		functions,
+		getFunction: jest.fn(),
 		getAllFunctions: jest.fn(),
 	},
 	pluginManager: {
 		spawn: jest.fn(),
+	},
+	package: {
+		individually: true,
+		include: [],
+		exclude: [],
 	},
 });
 
