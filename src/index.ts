@@ -2,11 +2,12 @@ import * as path from 'path';
 import * as fse from 'fs-extra';
 import _ from 'lodash';
 import globby from 'globby';
+import { unwatchFile, watchFile, Stats } from 'fs-extra';
 
 import {
+	ServerlessTSFunctionMap,
 	ServerlessTSInstance,
 	ServerlessTSOptions,
-	ServerlessTSFunction,
 } from './types';
 import {
 	extractFileNames,
@@ -15,7 +16,6 @@ import {
 	getSourceFiles,
 	getFiles,
 } from './utils';
-import { unwatchFile, watchFile, Stats } from 'fs-extra';
 
 const SERVERLESS_FOLDER = '.serverless';
 const BUILD_FOLDER = '.build';
@@ -97,17 +97,18 @@ class TypeScriptPlugin {
 		};
 	}
 
-	get functions(): { [key: string]: ServerlessTSFunction } {
-		const { options } = this;
-		const { service } = this.serverless;
+	get functions(): ServerlessTSFunctionMap {
+		const options = this.options;
+		const service = this.serverless.service;
 
-		const allFunctions = options.function
-			? {
-					[options.function]: service.functions[options.function],
-			  }
-			: service.functions;
+		const allFunctions =
+			options.function && service.functions
+				? {
+						[options.function]: service.functions[options.function],
+				  }
+				: service.functions;
 
-		if (Object.keys(allFunctions).length === 0) {
+		if (Object.keys(allFunctions ?? {}).length === 0) {
 			throw new Error('There are no functions to package/deploy!');
 		}
 		// Ensure we only handle runtimes that support Typescript
@@ -213,18 +214,19 @@ class TypeScriptPlugin {
 	 */
 	async copyExtras(): Promise<void> {
 		this.serverless.cli.log('Copying Extras...');
-		const { service } = this.serverless;
-		// include any "extras" from the "include" section
-		for await (const fn of Object.values(service.functions)) {
-			this.copyIncludes(fn.package.include);
+		const service = this.serverless.service;
+		// include any "extras" from the "include" section. The copy should be
+		// awaited for each extra before continuing.
+		for (const fn of Object.values(service.functions ?? {})) {
+			await this.copyIncludes(fn.package?.include);
 		}
 		if (this.serverless.package?.include) {
-			this.copyIncludes(this.serverless.package.include);
+			await this.copyIncludes(this.serverless.package.include);
 		}
 		this.serverless.cli.log('Finished Copying Extras');
 	}
 
-	private async copyIncludes(include: string[]): Promise<void> {
+	private async copyIncludes(include: string[] | undefined): Promise<void> {
 		if (!include) return;
 
 		const files = await globby(include);
@@ -292,35 +294,34 @@ class TypeScriptPlugin {
 	 * packaging preferences.
 	 */
 	async moveArtifacts(): Promise<void> {
-		const { service } = this.serverless;
+		const service = this.serverless.service;
 
 		await fse.copy(
 			path.join(this.originalServicePath, BUILD_FOLDER, SERVERLESS_FOLDER),
 			path.join(this.originalServicePath, SERVERLESS_FOLDER),
 		);
 
-		if (this.options.function) {
+		if (this.options.function && service.functions) {
 			const fn = service.functions[this.options.function];
-			const artifact = fn.package.artifact;
-			if (artifact) {
+			if (fn.package?.artifact) {
 				fn.package.artifact = path.join(
 					this.originalServicePath,
 					SERVERLESS_FOLDER,
-					path.basename(artifact),
+					path.basename(fn.package.artifact),
 				);
 			}
 			return;
 		}
 
 		if (this.serverless.package?.individually) {
-			const functionNames = Object.keys(this.functions);
+			const functionNames = Object.keys(this.functions ?? {});
 			functionNames.forEach((name) => {
-				const artifact = service.functions[name].package.artifact;
-				if (artifact) {
-					service.functions[name].package.artifact = path.join(
+				const pkg = service.functions?.[name].package;
+				if (pkg?.artifact) {
+					pkg.artifact = path.join(
 						this.originalServicePath,
 						SERVERLESS_FOLDER,
-						path.basename(artifact),
+						path.basename(pkg.artifact),
 					);
 				}
 			});

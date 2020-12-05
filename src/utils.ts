@@ -13,8 +13,7 @@ import * as fse from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
 import globby from 'globby';
-
-import { ServerlessTSFunction } from './types';
+import { ServerlessTSFunctionMap } from './types';
 
 export const makeDefaultTypescriptConfig = (): CompilerOptions => {
 	const defaultTypescriptConfig: CompilerOptions = {
@@ -34,7 +33,7 @@ export const makeDefaultTypescriptConfig = (): CompilerOptions => {
 export const extractFileNames = (
 	cwd: string,
 	provider: string,
-	functions?: { [key: string]: ServerlessTSFunction },
+	functions?: ServerlessTSFunctionMap,
 ): string[] => {
 	// The Google provider will use the entrypoint not from the definition of the
 	// handler function, but instead from the package.json:main field, or via a
@@ -69,15 +68,16 @@ export const extractFileNames = (
 	return _.values(functions)
 		.map((fn) => fn.handler)
 		.map((h) => {
-			const fnName = _.last(h.split('.'));
+			const fnName = _.last(h?.split('.'));
 			if (!fnName) {
 				throw new Error(
 					`Couldn't get exported function name; missing name after '.' in ${h}`,
 				);
 			}
-			const fnNameLastAppearanceIndex = h.lastIndexOf(fnName);
+			// TODO: the handler name should exist.
+			const fnNameLastAppearanceIndex = h?.lastIndexOf(fnName);
 			// replace only last instance to allow the same name for file and handler
-			const fileName = h.substring(0, fnNameLastAppearanceIndex);
+			const fileName = h?.substring(0, fnNameLastAppearanceIndex);
 
 			// Check if the .ts files exists. If so return that to watch
 			if (fse.existsSync(path.join(cwd, fileName + 'ts'))) {

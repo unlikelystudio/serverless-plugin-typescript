@@ -1,6 +1,7 @@
-import { FunctionDefinition } from 'serverless';
+import { AWS } from '@serverless/typescript';
 
-export type ServerlessTSFunctionMap = Record<string, ServerlessTSFunction>;
+export type ServerlessTSFunctionMap = AWS['functions'];
+export type ServerlessTSProviderRuntimes = AWS['provider']['runtime'];
 
 export interface ServerlessTSInstance {
 	cli: {
@@ -14,11 +15,8 @@ export interface ServerlessTSInstance {
 	pluginManager: ServerlessTSPluginManager;
 }
 
-export interface ServerlessTSService {
-	provider: {
-		name: string;
-		runtime?: string;
-	};
+export interface ServerlessTSService
+	extends Pick<AWS, 'custom' | 'provider' | 'functions'> {
 	custom?: {
 		/**
 		 * Custom options to be passed to this plugin.
@@ -32,9 +30,6 @@ export interface ServerlessTSService {
 			exclude?: string[];
 		};
 	};
-	functions: ServerlessTSFunctionMap;
-	getAllFunctions(): string[];
-	getFunction(functionName: string): FunctionDefinition;
 }
 
 /** CLI Options */
@@ -47,13 +42,6 @@ export interface ServerlessTSOptions {
 	extraServicePath?: string;
 	/** Input data */
 	tsconfigFilePath?: string;
-}
-
-export interface ServerlessTSFunction
-	extends Pick<FunctionDefinition, 'handler' | 'runtime'> {
-	handler: string;
-	package: ServerlessTSPackage;
-	runtime?: string;
 }
 
 /** Optional deployment packaging configuration */

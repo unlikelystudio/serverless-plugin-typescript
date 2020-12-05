@@ -46,11 +46,11 @@
     "node": ">=10.0.0"
   },
   "devDependencies": {
+    "@serverless/typescript": "2.14.0",
     "@types/fs-extra": "9.0.4",
     "@types/jest": "26.0.16",
     "@types/lodash": "4.14.165",
     "@types/node": "14.14.10",
-    "@types/serverless": "1.78.12",
     "@typescript-eslint/eslint-plugin": "4.9.0",
     "@typescript-eslint/parser": "4.9.0",
     "eslint": "7.15.0",

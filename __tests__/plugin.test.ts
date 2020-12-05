@@ -1,9 +1,13 @@
 import TypeScriptPlugin from '../src';
-import { ServerlessTSInstance, ServerlessTSFunctionMap } from '../src/types';
+import {
+	ServerlessTSInstance,
+	ServerlessTSFunctionMap,
+	ServerlessTSProviderRuntimes,
+} from '../src/types';
 
 const createInstance = (
 	slsFunctions?: ServerlessTSFunctionMap,
-	globalRuntime?: string,
+	globalRuntime?: ServerlessTSProviderRuntimes,
 ): ServerlessTSInstance => ({
 	cli: {
 		log: jest.fn(),
@@ -16,9 +20,7 @@ const createInstance = (
 			name: 'aws',
 			runtime: globalRuntime,
 		},
-		functions: slsFunctions ? slsFunctions : {},
-		getFunction: jest.fn(),
-		getAllFunctions: jest.fn(),
+		functions: slsFunctions ?? {},
 	},
 	pluginManager: {
 		spawn: jest.fn(),
@@ -69,7 +71,9 @@ describe('functions', () => {
 			const slsInstance = createInstance(functions, 'nodejs10.x');
 			const plugin = new TypeScriptPlugin(slsInstance, {});
 
-			expect(Object.values(plugin.functions).map((fn) => fn.handler)).toEqual([
+			expect(
+				Object.values(plugin.functions ?? {}).map((fn) => fn.handler),
+			).toEqual([
 				'tests/assets/hello.handler',
 				'tests/assets/world.handler',
 				'tests/assets/jsfile.create',
@@ -82,9 +86,9 @@ describe('functions', () => {
 			const slsInstance = createInstance(functions, 'python2.7');
 			const plugin = new TypeScriptPlugin(slsInstance, {});
 
-			expect(Object.values(plugin.functions).map((fn) => fn.handler)).toEqual([
-				'tests/assets/world.handler',
-			]);
+			expect(
+				Object.values(plugin.functions ?? {}).map((fn) => fn.handler),
+			).toEqual(['tests/assets/world.handler']);
 		});
 	});
 
@@ -93,7 +97,9 @@ describe('functions', () => {
 			const slsInstance = createInstance(functions);
 			const plugin = new TypeScriptPlugin(slsInstance, {});
 
-			expect(Object.values(plugin.functions).map((fn) => fn.handler)).toEqual([
+			expect(
+				Object.values(plugin.functions ?? {}).map((fn) => fn.handler),
+			).toEqual([
 				'tests/assets/hello.handler',
 				'tests/assets/world.handler',
 				'tests/assets/jsfile.create',
