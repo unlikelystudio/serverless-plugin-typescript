@@ -76,6 +76,7 @@ The default `tsconfig.json` file used by the plugin looks like this:
 
 This plugin will use your local `tsconfig.json` if it exists. You can configure a path to a custom Typescript configuration inside your `serverless.yml` using:
 
+```yaml
     ...
     plugins:
       - serverless-plugin-typescript
@@ -83,7 +84,7 @@ This plugin will use your local `tsconfig.json` if it exists. You can configure 
       typeScript:
         tsconfigFilePath: ./tsconfig.build.json
     ...    
-
+```
 
 ### Including extra files
 

@@ -2,7 +2,7 @@ import TypeScriptPlugin from '../src';
 import { ServerlessTSInstance, ServerlessTSFunctionMap } from '../src/types';
 
 const createInstance = (
-	functions: ServerlessTSFunctionMap,
+	slsFunctions?: ServerlessTSFunctionMap,
 	globalRuntime?: string,
 ): ServerlessTSInstance => ({
 	cli: {
@@ -16,7 +16,7 @@ const createInstance = (
 			name: 'aws',
 			runtime: globalRuntime,
 		},
-		functions,
+		functions: slsFunctions ? slsFunctions : {},
 		getFunction: jest.fn(),
 		getAllFunctions: jest.fn(),
 	},
@@ -98,6 +98,17 @@ describe('functions', () => {
 				'tests/assets/world.handler',
 				'tests/assets/jsfile.create',
 			]);
+		});
+	});
+
+	describe('when there are no functions', () => {
+		it('shows a warning about a project without functions to be deployed', () => {
+			const slsInstance = createInstance();
+			const plugin = new TypeScriptPlugin(slsInstance, {});
+
+			expect(() => plugin.functions).toThrow(
+				'There are no functions to package/deploy!',
+			);
 		});
 	});
 });

@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fse from 'fs-extra';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import globby from 'globby';
 
 import {
@@ -101,6 +101,9 @@ class TypeScriptPlugin {
 			  }
 			: service.functions;
 
+		if (Object.keys(allFunctions).length === 0) {
+			throw new Error('There are no functions to package/deploy!');
+		}
 		// Ensure we only handle runtimes that support Typescript
 		return _.pickBy(allFunctions, ({ runtime }) => {
 			const resolvedRuntime = runtime || service.provider.runtime;
@@ -335,7 +338,7 @@ class TypeScriptPlugin {
 	private async linkOrCopy(
 		srcPath: string,
 		dstPath: string,
-		type?: fse.FsSymlinkType,
+		type?: fse.SymlinkType,
 	): Promise<void> {
 		return fse.symlink(srcPath, dstPath, type).catch((error) => {
 			if (error.code === 'EPERM' && error.errno === -4048) {
