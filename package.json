@@ -21,14 +21,14 @@
     "dist/**/*"
   ],
   "scripts": {
-    "pretest": "npm run lint",
+    "pretest": "yarn run lint",
     "build": "rimraf dist && tsc -p tsconfig.build.json",
     "build:check": "tsc",
     "format": "prettier --loglevel error --write \"{src,tests}/**/*.ts\"",
     "test": "jest",
     "lint": "eslint --ext ts .",
-    "prepublishOnly": "npm run format && npm run lint && npm test",
-    "preversion": "npm run format && npm run lint && npm test",
+    "prepublishOnly": "yarn run format && yarn run lint && yarn test",
+    "preversion": "yarn run format && yarn run lint && yarn test",
     "version": " git add -A src",
     "postversion": "git push && git push --tags"
   },
