@@ -79,7 +79,7 @@ This plugin will use your local `tsconfig.json` if it exists. You can configure 
 ```yaml
     ...
     plugins:
-      - serverless-plugin-typescript
+      - '@kingdarboja/serverless-plugin-typescript'
     custom:
       typeScript:
         tsconfigFilePath: ./tsconfig.build.json

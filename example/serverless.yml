@@ -1,7 +1,7 @@
 service: serverless-example
 
 plugins:
-  - serverless-plugin-typescript
+  - '@kingdarboja/serverless-plugin-typescript'
 
 provider:
   name: aws

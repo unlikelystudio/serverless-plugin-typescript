@@ -1,5 +1,6 @@
 {
   "automerge": true,
   "extends": ["config:base"],
-  "labels": ["dependencies"]
+  "labels": ["dependencies"],
+  "ignorePaths": ["example"]
 }
