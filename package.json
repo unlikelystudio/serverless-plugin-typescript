@@ -1,5 +1,5 @@
 {
-  "name": "@kingdarboja/serverless-plugin-typescript",
+  "name": "@unlikelystudio/serverless-plugin-typescript",
   "version": "1.4.1",
   "author": {
     "name": "Prisma Labs",
@@ -7,8 +7,8 @@
   },
   "maintainers": [
     {
-      "name": "KingDarBoja",
-      "url": "https://github.com/KingDarBoja/"
+      "name": "unlikelystudio",
+      "url": "https://github.com/unlikelystudio/"
     }
   ],
   "publishConfig": {
@@ -34,7 +34,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/KingDarBoja/serverless-plugin-typescript.git"
+    "url": "git+https://github.com/unlikelystudio/serverless-plugin-typescript.git"
   },
   "keywords": [
     "serverless",
@@ -68,6 +68,7 @@
   "dependencies": {
     "fs-extra": "9.1.0",
     "globby": "11.0.4",
-    "lodash": "4.17.21"
+    "lodash": "4.17.21",
+    "typescript-transform-paths": "^3.1.0"
   }
 }

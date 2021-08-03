@@ -9,9 +9,11 @@ import {
 	parseConfigFileTextToJson,
 	flattenDiagnosticMessageText,
 } from 'typescript';
+import * as ts from 'typescript';
 import * as fse from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
+import transformPaths from 'typescript-transform-paths';
 import globby from 'globby';
 
 import { ServerlessTSFunction } from './types';
@@ -104,7 +106,9 @@ export const run = (
 	options.listEmittedFiles = true;
 	const program = createProgram(fileNames, options);
 
-	const emitResult = program.emit();
+	const emitResult = program.emit(undefined, undefined, undefined, false, {
+		before: [transformPaths(program, {}, { ts })],
+	});
 
 	const allDiagnostics = getPreEmitDiagnostics(program).concat(
 		emitResult.diagnostics,
